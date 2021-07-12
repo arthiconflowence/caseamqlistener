@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="case_case-create" doc:id="cf8267d9-201b-43c0-9954-18918eed8b56" >
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="070debbe-df59-4da5-b9a9-ccde8c31fd1f" doc:name="Set Case Id">
+			<ee:message >
+				<ee:set-payload resource="transforms/dwl/prc-api-json.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="TRACE" doc:name="Before Request" doc:id="74c3aa1b-7444-429d-a1f5-fdcd2ec019d4" message="${application-msgs.before-connector-call-message}"/>
+		<until-successful maxRetries="${retry.http.numRetries}" doc:name="retry case-prc-api" doc:id="ebfa9392-cb3d-484e-a33d-1e48f9b9ab55" millisBetweenRetries="${retry.http.delayMillisecs}">
+		<http:request method="POST" doc:name="Invoke  Case Process API" doc:id="3488c9c1-4602-47e7-88f0-205871bf6d3d" config-ref="case-prc-api-httpRequestConfig" path="${case-prc-api.path}" sendCorrelationId="ALWAYS" correlationId='#[vars.correlation]'>
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		</until-successful>
+		<logger level="TRACE" doc:name="After Request" doc:id="218cec0f-1d10-4553-861f-389c44147d05" message="${application-msgs.after-connector-call-message}"/>
+	</sub-flow>
+	<sub-flow name="case_case-update-sf" doc:id="86813f31-9ce8-40c3-9cd6-44e8415f0f28" >
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="489e2aa5-b973-47a9-b5ac-3d0f48ec3cc1" doc:name="SNOW-SFDC Map">
+			<ee:message >
+				<ee:set-payload resource="transforms/dwl/update-sf-json.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="TRACE" doc:name="Before Request" doc:id="2c382534-d404-4dd0-b80e-be2505e8d61f" message="${application-msgs.before-connector-call-message}"/>
+		<until-successful maxRetries="${retry.http.numRetries}" doc:name="retry case-prc-api" doc:id="0398b367-0309-4ecc-8216-0c7bfddccb11" millisBetweenRetries="${retry.http.delayMillisecs}">
+		<http:request method="PATCH" doc:name="Invoke Update Case Process API" doc:id="842c5919-0de2-4dd8-95fd-3ce03b248b38" config-ref="case-prc-api-httpRequestConfig" path="${case-prc-api.case-update-path}" sendCorrelationId="ALWAYS" correlationId='#[vars.correlation]'>
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"caseId" : payload.caseId
+}]]]></http:uri-params>
+		</http:request>
+		</until-successful>
+		<logger level="TRACE" doc:name="After Request" doc:id="06963e62-bb0a-4422-b422-36bc0302de3f" message="${application-msgs.after-connector-call-message}"/>
+	</sub-flow>
+</mule>

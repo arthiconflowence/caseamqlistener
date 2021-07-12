@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="logic-test-suite.xml" />
+	<munit:test name="logic-test-suite-logic-sub-flowTest" doc:id="22625ea9-ad73-4e2d-9b68-332a471e3ba3" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a72ee5e2-cb5b-46d2-a6a0-bcca9a3f7e1d" >
+				<munit:payload value="#[readUrl('classpath://transforms/examples/case-mock-payload.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to process-case" doc:id="b6846e35-6216-4114-bb2e-9a99e9f4d12d" name="case_case-create"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f9b3ec2b-0c34-481f-a197-0d11c80e48c1" message="${munit.message}" is="#[MunitTools::notNullValue()]" expression="#[payload.message]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

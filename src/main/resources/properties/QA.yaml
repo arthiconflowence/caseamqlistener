@@ -1,0 +1,70 @@
+#Case Process API Configurations  
+case-prc-api:
+  #Replace with respective application hostname
+  host: "REPLACE_BY_USER"
+  port: "REPLACE_BY_USER"
+  base-path: "/"
+  response-timeout: "60000"
+  connection-idle-timeout: "3000"
+  http-frequency: "5000"
+  http-reconnection-attempts: "2"
+  path: "/api/case"
+  case-update-path: "/api/sfdc-case/{caseId}"
+#Jira System API Configurations
+jira-sys-api:
+  #Replace with respective application hostname
+  host: "REPLACE_BY_USER"
+  port: "REPLACE_BY_USER"
+  base-path: "/"
+  response-timeout: "60000"
+  connection-idle-timeout: "3000"
+  http-frequency: "5000"
+  http-reconnection-attempts: "2"
+  path: "/api/issue"
+ 
+#AMQ Configurations
+anypoint-mq:
+    server-url: "REPLACE_BY_USER"
+    case-queue-name: "REPLACE_BY_USER"
+    case-dl-queue-name: "REPLACE_BY_USER"
+    case-update-queue-name: "REPLACE_BY_USER"
+    case-update-dl-queue-name: "REPLACE_BY_USER"
+    case-update-jira-queue-name: "REPLACE_BY_USER"
+    case-update-jira-dl-queue-name: "REPLACE_BY_USER"
+    fetchSize: "10"
+    frequency: "1000"
+    ackTimeout: "1000"
+#SFDC-JIRA Case Status Mapping Configurations    
+sfdc-mapping:
+  state:
+    Closed: "Closed"
+    Working: "Working"
+    New: "New"
+    Escalated: "Escalated"
+#Customize the application messages in the below section
+application-msgs:
+   #Before Connector logger message
+   before-connector-call-message: Before Connector Call
+   #After Connector logger message
+   after-connector-call-message: After Connector Call
+   #Local Exception logger message
+   local-exception-handler-message: Exception has occured
+   source: "JIRA"
+#MUNIT Message for failed tests
+munit:
+   message: "Test Failed"
+
+#retry
+retry:
+   http: 
+    delayMillisecs: "3000"
+    numRetries: "3"
+   amq:
+    delayMillisecs: "3000"
+    numRetries: "3"
+    
+#reconnection
+reconnection:
+     amq:
+      frequency: "2000"
+      attempts: "2"

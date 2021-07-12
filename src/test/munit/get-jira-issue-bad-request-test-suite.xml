@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="get-jira-issue-test-suite.xml" />
+	<munit:test name="get-jira-issue-bad-request-test-suite-get-jira-issueFlowTest" doc:id="c0db9ce7-9ab5-4772-be2d-52506f36452d" description="Test" expectedErrorType="HTTP:NOT_FOUND">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="95625cb2-a7e0-4190-930a-d073856fa246" >
+				<munit:payload value="#[readUrl('classpath://transforms/examples/case-jira-bad-request-mock-payload.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get-jira-issueFlow" doc:id="63fe05e8-c862-447f-934d-464098f6085b" name="jira-issue_jira-issue"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="76c3cd0e-32a5-4d85-a60d-6b6f7a357962" is="#[MunitTools::notNullValue()]" message="${munit.message}" expression="#[payload.caseId]"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>

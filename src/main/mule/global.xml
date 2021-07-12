@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+	<configuration-properties doc:name="Configuration properties based on env" doc:id="4d0c522f-b3d9-4f9e-84e8-91a9ade31036" file="properties/${mule.env}.yaml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config based on env" doc:id="f42b4358-b6bc-49bb-a1ed-6eca27c7a1bd" file="properties/${mule.env}-secure.yaml" key="${encryptionKey}" />
+	<global-property doc:name="Global Property for encryptionKey" doc:id="0b1c98d6-1e1f-436f-82cb-e32f9ff2778c" name="encryptionKey" value="Placeholder Needed For Designer. Real Value provided at runtime." />
+
+	<configuration doc:name="Configuration for application error handler" doc:id="706a0b2d-cc0f-4be3-9c7f-1763f660cd4a" defaultErrorHandler-ref="error-handler_common" />
+	
+	<global-property doc:name="Global Property For default environment" doc:id="3569915c-12a0-4b81-b2ed-bb65ff02bb5f" name="mule.env" value="LOCAL" />
+	
+	<http:request-config name="case-prc-api-httpRequestConfig" doc:name="Case PRC API HTTP Request configuration " doc:id="46110b08-e5eb-47a3-88a5-d9939169748d" basePath="${case-prc-api.base-path}" responseTimeout="${case-prc-api.response-timeout}">
+		<http:request-connection host="${case-prc-api.host}" port="${case-prc-api.port}" connectionIdleTimeout="${case-prc-api.connection-idle-timeout}">
+			<reconnection>
+				<reconnect frequency="${case-prc-api.http-frequency}" count="${case-prc-api.http-reconnection-attempts}" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="jira-sys-api-httpRequestConfig" doc:name="Jira Sys API HTTP Request configuration" doc:id="b39df1dc-ddf6-4b2f-ba78-715964480331" basePath="${jira-sys-api.base-path}" responseTimeout="${jira-sys-api.response-timeout}">
+		<http:request-connection host="${jira-sys-api.host}" port="${jira-sys-api.port}" connectionIdleTimeout="${jira-sys-api.connection-idle-timeout}">
+			<reconnection>
+				<reconnect frequency="${jira-sys-api.http-frequency}" count="${jira-sys-api.http-reconnection-attempts}" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	
+<import doc:name="Import global-common" doc:id="b3d612e2-bb75-4a90-98d8-c863dda27a25"
+		file="global-common.xml" />
+	<import doc:name="Import common-error-handler" doc:id="75cfbb25-9865-4ca0-b2e1-b976caa5ac20"
+		file="common-error-handler.xml" />
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="d512def5-de75-4466-bf7d-e0276203b004" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	
+
+
+</mule>

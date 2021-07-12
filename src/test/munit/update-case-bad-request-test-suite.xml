@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="case-test-suite.xml" />
+	<munit:test name="case-test-suite-update-sf-bad-request-caseTest" doc:id="aa0b16f1-7e33-4b08-97f0-5ca6dd014f5d" description="Test" expectedErrorType="HTTP:BAD_REQUEST">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="ede8d103-83f9-4019-8e0b-d7857bb36fb0" >
+				<munit:payload value="#[readUrl('classpath://transforms/examples/case-update-bad-req-mock-payload.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to update-sf-case" doc:id="e54b1c7b-4e5e-4670-acec-1c4b6f2e1367" name="case_case-update-sf"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="40f182be-fbf0-4573-b541-5d0fa4694308" expression="#[payload.success]" is="#[MunitTools::nullValue()]" message="${munit.message}"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>

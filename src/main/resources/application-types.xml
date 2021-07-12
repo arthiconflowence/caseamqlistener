@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="Incident" format="json">
+      <types:shape format="weave" example="examples/Incident-1.json"><![CDATA[%dw 2.0
+
+type Incident = {|
+  active: Boolean, 
+  activityDue: String, 
+  additionalAssigneeList: String, 
+  approval: String, 
+  approvalHistory: String, 
+  approvalSet: String, 
+  assignedTo: String, 
+  assignedGroup: String, 
+  businessDuration: String, 
+  businessService: String, 
+  businessStc: Number {"typeId": "int"}, 
+  calendarDuration: String, 
+  calendarStc: Number {"typeId": "int"}, 
+  callerId: String, 
+  category: String, 
+  causedBy: String, 
+  childIncidents: Number {"typeId": "int"}, 
+  closeNotes: String, 
+  closeCode: String, 
+  closedAt: String, 
+  closedBy: String, 
+  cmdbCi: String, 
+  comments: String, 
+  commentsAndWorkNotes: String, 
+  company: String, 
+  contactType: String, 
+  correlationDisplay: String, 
+  correlationId: String, 
+  deliveryPlan: String, 
+  deliveryTask: String, 
+  description: String, 
+  dueDate: String, 
+  escalation: Number {"typeId": "int"}, 
+  expectedStart: String, 
+  followUp: String, 
+  groupList: String, 
+  holdReason: Number {"typeId": "int"}, 
+  impact: Number {"typeId": "int"}, 
+  incident_state: Number {"typeId": "int"}, 
+  knowlegde: Boolean, 
+  location: String, 
+  madeSla: Boolean, 
+  notify: Number {"typeId": "int"}, 
+  number: String, 
+  openedAt: String, 
+  openedBy: String, 
+  order: Number {"typeId": "int"}, 
+  parent: String, 
+  parentIncident: String, 
+  priority: Number {"typeId": "int"}, 
+  problemId: String, 
+  reassignmentCount: Number {"typeId": "int"}, 
+  reopenCount: Number {"typeId": "int"}, 
+  reopenedBy: String, 
+  reopenedTime: String, 
+  resolvedAt: String, 
+  resolvedBy: String, 
+  rfc: String, 
+  severity: Number {"typeId": "int"}, 
+  shortDescription: String, 
+  slaDue: String, 
+  state: Number {"typeId": "int"}, 
+  subCategory: String, 
+  timeWorked: String, 
+  uponApproval: String, 
+  uponReject: String, 
+  urgency: Number {"typeId": "int"}, 
+  userInput: String, 
+  watchList: String, 
+  workEnd: String, 
+  workNotes: String, 
+  workNotesList: String, 
+  workStart: String
+|} {"example": "{\"active\":false,\"activityDue\":\"\",\"additionalAssigneeList\":\"\",\"approval\":\"\",\"approvalHistory\":\"\",\"approvalSet\":\"\",\"assignedTo\":\"\",\"assignedGroup\":\"\",\"businessDuration\":\"\",\"businessService\":\"\",\"businessStc\":0,\"calendarDuration\":\"\",\"calendarStc\":0,\"callerId\":\"\",\"category\":\"\",\"causedBy\":\"\",\"childIncidents\":0,\"closeNotes\":\"\",\"closeCode\":\"\",\"closedAt\":\"\",\"closedBy\":\"\",\"cmdbCi\":\"\",\"comments\":\"\",\"commentsAndWorkNotes\":\"\",\"company\":\"\",\"contactType\":\"\",\"correlationDisplay\":\"\",\"correlationId\":\"\",\"deliveryPlan\":\"\",\"deliveryTask\":\"\",\"description\":\"\",\"dueDate\":\"\",\"escalation\":0,\"expectedStart\":\"\",\"followUp\":\"\",\"groupList\":\"\",\"holdReason\":0,\"impact\":0,\"incident_state\":0,\"knowlegde\":false,\"location\":\"\",\"madeSla\":false,\"notify\":0,\"number\":\"\",\"openedAt\":\"\",\"openedBy\":\"\",\"order\":0,\"parent\":\"\",\"parentIncident\":\"\",\"priority\":0,\"problemId\":\"\",\"reassignmentCount\":0,\"reopenCount\":0,\"reopenedBy\":\"\",\"reopenedTime\":\"\",\"resolvedAt\":\"\",\"resolvedBy\":\"\",\"rfc\":\"\",\"severity\":0,\"shortDescription\":\"This is a test incident\",\"slaDue\":\"\",\"state\":0,\"subCategory\":\"\",\"timeWorked\":\"\",\"uponApproval\":\"\",\"uponReject\":\"\",\"urgency\":0,\"userInput\":\"\",\"watchList\":\"\",\"workEnd\":\"\",\"workNotes\":\"\",\"workNotesList\":\"\",\"workStart\":\"\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="Case" format="json">
+      <types:shape format="weave" example="examples/Case-3.json"><![CDATA[%dw 2.0
+
+type Case = {|
+  Status: String, 
+  Type: String, 
+  Priority: String, 
+  Description: String, 
+  Id: String, 
+  Subject: String
+|} {"example": "{\"Status\":\"New\",\"Type\":\"Electrical\",\"Priority\":\"Medium\",\"Description\":\"This is atest\",\"Id\":\"5003j00001dHndMAAS\",\"Subject\":\"Test2\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#be033672-7d1a-473a-96c1-e4a03094fccf">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Case"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Incident"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
