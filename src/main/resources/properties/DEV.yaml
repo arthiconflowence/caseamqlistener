@@ -30,7 +30,7 @@ anypoint-mq:
     case-dl-queue-name: "arthi-sfa-sfdc-case-dlq"
     case-update-queue-name: "sfa-sfdc-update-case-queue"
     case-update-dl-queue-name: "sfa-sfdc-update-case-dlq"
-    case-update-jira-queue-name: "sfa-sfdc-case-update-jira-queue"
+    case-update-jira-queue-name: "arthi-sfa-sfdc-case-update-jira-queue"
     case-update-jira-dl-queue-name: "sfa-sfdc-case-update-jira-dlq"
     fetchSize: "10"
     frequency: "1000"

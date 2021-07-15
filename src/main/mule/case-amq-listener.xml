@@ -4,52 +4,46 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
 	<flow name="case-amq-listener_create-case">
-		<jms:listener doc:name="On New Message" doc:id="2fd8601c-4ddc-421e-98b6-84080cd4fb01" config-ref="JMS_Config" destination="${anypoint-mq.case-queue-name}" ackMode="MANUAL" numberOfConsumers="1" inboundContentType="application/json">
+		<jms:listener doc:name="On New Message" doc:id="2fd8601c-4ddc-421e-98b6-84080cd4fb01" config-ref="JMS_Config" destination="${anypoint-mq.case-queue-name}" ackMode="AUTO" numberOfConsumers="1" inboundContentType="application/json">
 			<jms:consumer-type >
 				<jms:topic-consumer/>
 			</jms:consumer-type>
 			<jms:response outboundContentType="application/json" sendCorrelationId="AUTO" correlationId="correlationId"/>
 		</jms:listener>
 		<try doc:name="Try-case-creation-errors" doc:id="3e36b22c-7531-4ed6-aea2-2ffd59ae4031" >
-			<set-variable value="#[attributes.ackToken]" doc:name="set-ack-token-var" doc:id="fe8d84bc-c17f-4d12-aee0-1b783307e4c4" variableName="ackId" />
+			<set-variable value="#[attributes.ackId]" doc:name="set-ack-token-var" doc:id="fe8d84bc-c17f-4d12-aee0-1b783307e4c4" variableName="ackId" />
 			<set-variable value="#[message.attributes.properties.correlationId]" doc:name="set-correlation-var" doc:id="213d5193-ebd8-4c7d-8b15-0e3c9c5ee60c" variableName="correlation" />
 			<flow-ref doc:name="case_case-create" doc:id="d62156b0-e968-4a1c-af39-47011b1f1c0e" name="case_case-create" />
-			<until-successful maxRetries="${retry.amq.numRetries}" doc:name="retry amq Ack" doc:id="d4a44d06-7819-4089-b844-e8c01d0023c2" millisBetweenRetries="${retry.amq.delayMillisecs}">
-				<jms:ack doc:name="Ack" doc:id="757a53a2-b684-4273-a26f-e162bd865dbd" ackId="#[vars.ackId]" />
-
-			</until-successful>
-			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate Any Error" doc:id="c4b7bba4-48f8-4bd1-b2c9-8a016f118a2e" >
-					<logger level="ERROR" doc:name="Error Publish" doc:id="6e026675-cefb-4851-9bfd-980fc576bbb5" message="${application-msgs.local-exception-handler-message}"/>
-					<until-successful maxRetries="${retry.amq.numRetries}" doc:name="retry amq Nack" doc:id="cc6e18bb-dae1-4a12-b33b-98a9eac024fd" millisBetweenRetries="${retry.amq.delayMillisecs}">
-						<jms:recover-session doc:name="Recover session" doc:id="26fa12b4-1b4d-4260-b3e1-889895b23dea" ackId="#[vars.ackId]"/>
-
-					</until-successful>
-					<raise-error doc:name="raise error for ANY" doc:id="03bbab94-d024-44ff-983b-4ec67fd65e74" type="ANY" description="${application-msgs.local-exception-handler-message}"/>
-				</on-error-propagate>
-			</error-handler>
-		</try>
-    </flow>
+			<logger level="INFO" doc:name="Logger" doc:id="9e1f07d2-267e-4316-8abf-4e0a2e218896" message="#[payload]"/>
+		
+</try>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="Error Propagate Any Errors" doc:id="8c40186e-4750-4619-9c48-805edcdd6a7b" type="ANY" >
+				<logger level="INFO" doc:name="Logger" doc:id="d31ff20f-0e82-4494-9b64-3933c36e4619" message="#[message.attributes.ackId]" />
+				<raise-error doc:name="raise error for ANY" doc:id="79a823ba-554e-4c8c-815a-71085ad145b8" type="ANY" description="Error in processing" />
+			</on-error-propagate>
+		</error-handler>
+    
+</flow>
        <flow name="case-amq-listener_update-sfdc-jira">
-		<jms:listener doc:name="On New Message" doc:id="60777f07-78c6-4e04-b70c-e8935bb76b67" config-ref="JMS_Config" destination="${anypoint-mq.case-update-jira-queue-name}" ackMode="MANUAL" numberOfConsumers="1">
-			<jms:response outboundContentType="application/json" />
+		<jms:listener doc:name="On New Message" doc:id="60777f07-78c6-4e04-b70c-e8935bb76b67" config-ref="JMS_Config" destination="${anypoint-mq.case-update-jira-queue-name}" ackMode="MANUAL" numberOfConsumers="1" inboundContentType="application/json">
+			<jms:consumer-type >
+				<jms:topic-consumer />
+			</jms:consumer-type>
+			<jms:response outboundContentType="application/json" sendCorrelationId="AUTO" correlationId="#[vars.correlation]"/>
 		</jms:listener>
 		<try doc:name="Try-case-update-errors" doc:id="0b294e2f-5cb1-4719-91e6-469a4102a8cf" >
-			<set-variable value="#[attributes.ackToken]" doc:name="set-ack-token-var" doc:id="1a7b43c9-4d65-4b1a-9592-ec1dc758b3b4" variableName="ackId" />
+			<set-variable value="#[attributes.ackId]" doc:name="set-ack-token-var" doc:id="1a7b43c9-4d65-4b1a-9592-ec1dc758b3b4" variableName="ackId" />
 			<set-variable value="#[message.attributes.properties.correlationId]" doc:name="set-correlation-var" doc:id="b78034b4-adcc-4021-b607-9b253bbbb198" variableName="correlation" />
 			<flow-ref doc:name="jira-issue_jira-issue" doc:id="ed030640-7ca7-4369-9083-cd60b4c51d6c" name="jira-issue_jira-issue"/>
 			<flow-ref doc:name="case_case-update-sf" doc:id="8ecd962e-48e0-4466-adc1-bc0677ddf055" name="case_case-update-sf" />
-			<until-successful maxRetries="${retry.amq.numRetries}" doc:name="retry amq Ack" doc:id="f8350ce9-72d7-45e2-9142-1aa943f1e822" millisBetweenRetries="${retry.amq.delayMillisecs}">
-				<jms:ack doc:name="Copy_of_Ack" doc:id="db0de0c5-a7b3-43f2-95d8-3b685d559063" ackId="#[vars.ackId]" />
-
-			</until-successful>
+			<logger level="INFO" doc:name="Logger" doc:id="4752e1c6-f2dc-4422-bd74-b76fc44eb08a" message="#[payload]"/>
+			<jms:ack doc:name="Ack" doc:id="db0de0c5-a7b3-43f2-95d8-3b685d559063" ackId="#[vars.ackId]" />
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate Any Errors" doc:id="0c6cc3ad-d5d0-4b51-843a-3a87fc8aa637" type="ANY">
-				<until-successful maxRetries="${retry.amq.numRetries}" doc:name="retry amq Nack" doc:id="bb67a53d-5082-490f-9858-d22d5923d8e2" millisBetweenRetries="${retry.amq.delayMillisecs}">
-						<jms:recover-session doc:name="Copy_of_Recover session" doc:id="df0cd3a0-c6ce-4367-972e-c5b22c922362" ackId="#[vars.ackId]" />
-
-					</until-successful>
-				<raise-error doc:name="raise error for ANY" doc:id="84f6d401-ba0a-4fd9-b465-c0748ffc75f6" type="ANY" />
+				<jms:recover-session doc:name="Recover session" doc:id="df0cd3a0-c6ce-4367-972e-c5b22c922362" ackId="#[vars.ackId]" />
+					<logger level="INFO" doc:name="Logger" doc:id="b8a01272-6d83-44d4-aaac-1e5953e1909d" message="#[message.attributes.ackId]"/>
+					<raise-error doc:name="raise error for ANY" doc:id="84f6d401-ba0a-4fd9-b465-c0748ffc75f6" type="ANY" description="Error in processing"/>
 			</on-error-propagate>
 			</error-handler>
 		</try>
@@ -66,7 +60,7 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
 			<set-variable value="#[attributes.ackToken]" doc:name="set-ack-token-var" doc:id="eb41990f-a0f9-4184-a102-db2842d6fb9d" variableName="ackId" />
 			<set-variable value="#[message.attributes.properties.correlationId]" doc:name="set-correlation-var" doc:id="2000264b-7149-4c84-9c94-4fbd32e99a3b" variableName="correlation" />
 			<flow-ref doc:name="case_case-update-sf" doc:id="5691a46a-c4e5-4c66-94b6-95ae43376e32" name="case_case-update-sf" />
-			<until-successful maxRetries="${retry.amq.numRetries}" doc:name="Copy_of_retry amq Ack" doc:id="274be73a-de9a-445a-b0ac-8304a5621475" millisBetweenRetries="${retry.amq.delayMillisecs}" >
+			<until-successful maxRetries="${retry.amq.numRetries}" doc:name="retry amq Ack" doc:id="274be73a-de9a-445a-b0ac-8304a5621475" millisBetweenRetries="${retry.amq.delayMillisecs}" >
 				<jms:ack doc:name="Ack" doc:id="ce747e1b-6c86-48c4-befb-28407eb1b11d" ackId="#[vars.ackId]" />
 			</until-successful>
 			<error-handler >
